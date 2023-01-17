@@ -14,6 +14,11 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import {
+  GetFullProfileResponseInterface,
+  RadicleApiDriver,
+  getFullProfile,
+} from './api';
 
 class AppUpdater {
   constructor() {
@@ -25,10 +30,22 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+ipcMain.on('ipc-main', async (event, arg) => {
+  const action: string | null = arg[0] ?? null;
+
+  if (action) {
+    if (action === 'full-profile') {
+      // requesting full profile
+
+      const res: GetFullProfileResponseInterface = await getFullProfile(
+        RadicleApiDriver.cli
+      );
+
+      console.log(res);
+
+      event.reply('ipc-main', ['full-profile-res', res.id, res.name]);
+    }
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {

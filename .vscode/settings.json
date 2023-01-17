@@ -4,7 +4,7 @@
     ".prettierrc": "jsonc",
     ".eslintignore": "ignore"
   },
-  
+
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -13,7 +13,7 @@
   ],
 
   "javascript.validate.enable": false,
-  "javascript.format.enable": false,
+  "javascript.format.enable": true,
   "typescript.format.enable": false,
 
   "search.exclude": {
@@ -26,5 +26,12 @@
     "test/**/__snapshots__": true,
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
-  }
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "application.experimental.rendererProfiling": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.run": "onType"
 }
