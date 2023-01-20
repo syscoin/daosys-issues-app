@@ -15,7 +15,7 @@ export const LeftBar: FC<{}> = () => {
             <Link to="/me" className="list-group-item">
               My identity
             </Link>
-            <Link to="/me" className="list-group-item">
+            <Link to="/settings" className="list-group-item">
               App settings
             </Link>
           </div>

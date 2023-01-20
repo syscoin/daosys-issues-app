@@ -12,6 +12,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import ElectronStore from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import {
@@ -29,6 +30,7 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+const store: ElectronStore = new ElectronStore();
 
 ipcMain.on('ipc-main', async (event, arg) => {
   const action: string | null = arg[0] ?? null;
@@ -44,6 +46,24 @@ ipcMain.on('ipc-main', async (event, arg) => {
       console.log(res);
 
       event.reply('ipc-main', ['full-profile-res', res.id, res.name]);
+    }
+
+    if (action === 'set-config-variable') {
+      store.set(arg[1], arg[2]);
+      console.log('Seetings update');
+      console.log(arg[1], arg[2]);
+    }
+
+    if (action === 'get-config-variable') {
+      const variable: string = arg[1];
+
+      const value: unknown = store.get(variable, null);
+
+      event.reply('ipc-main', [
+        'get-config-variable-response',
+        variable,
+        value,
+      ]);
     }
   }
 });
