@@ -19,6 +19,7 @@ import {
   GetFullProfileResponseInterface,
   RadicleApiDriver,
   getFullProfile,
+  openAndScanDirectoryForRadicleProject,
 } from './api';
 
 class AppUpdater {
@@ -64,6 +65,12 @@ ipcMain.on('ipc-main', async (event, arg) => {
         variable,
         value,
       ]);
+    }
+
+    // projects
+
+    if (action === 'open-project') {
+      openAndScanDirectoryForRadicleProject(mainWindow as BrowserWindow);
     }
   }
 });

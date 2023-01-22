@@ -1,4 +1,6 @@
+import { ResultType } from '@remix-run/router/dist/utils';
 import { exec, ExecException } from 'child_process';
+import { BrowserWindow, dialog } from 'electron';
 
 export enum RadicleApiDriver {
   http,
@@ -9,6 +11,25 @@ export interface GetFullProfileResponseInterface {
   name: string | null;
   id: string | null;
 }
+
+export const openAndScanDirectoryForRadicleProject = async (
+  window: BrowserWindow
+) => {
+  return new Promise((resolve, reject) => {
+    dialog
+      .showOpenDialog(window, {
+        properties: ['openDirectory'],
+      })
+      .then((value) => {
+        if (value.canceled === false) {
+          console.log(value.filePaths);
+
+          resolve(value.filePaths);
+        }
+      })
+      .catch((reason) => {});
+  });
+};
 
 /**
  * Get Full profile using `rad self` command or web API
