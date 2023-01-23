@@ -70,7 +70,14 @@ ipcMain.on('ipc-main', async (event, arg) => {
     // projects
 
     if (action === 'open-project') {
-      openAndScanDirectoryForRadicleProject(mainWindow as BrowserWindow);
+      const openResult: string | boolean =
+        await openAndScanDirectoryForRadicleProject(
+          mainWindow as BrowserWindow
+        );
+
+      // scan directory for radicle project and gather info
+
+      event.reply('ipc-main', ['open-project-res', openResult]);
     }
   }
 });

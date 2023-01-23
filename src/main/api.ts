@@ -14,21 +14,53 @@ export interface GetFullProfileResponseInterface {
 
 export const openAndScanDirectoryForRadicleProject = async (
   window: BrowserWindow
-) => {
+): Promise<string | boolean> => {
   return new Promise((resolve, reject) => {
     dialog
       .showOpenDialog(window, {
         properties: ['openDirectory'],
+        message: 'Please select Radicle project directory.',
       })
       .then((value) => {
         if (value.canceled === false) {
-          console.log(value.filePaths);
-
-          resolve(value.filePaths);
+          resolve(value.filePaths[0]);
+        } else {
+          reject(new Error('Directory selection was cancelled'));
         }
       })
-      .catch((reason) => {});
-  });
+      .catch((reason) => {
+        reject(reason);
+        return reason;
+      });
+
+    return true;
+  })
+    .then((path): Promise<string | boolean> => {
+      return new Promise((resolve, reject) => {
+        const cmdTemp = `cd ${path} && rad inspect`;
+
+        exec(
+          cmdTemp,
+          (_error: ExecException | null, stdout: string, stderr: string) => {
+            if (stdout.includes('rad:git:')) {
+              // found rad repo
+
+              resolve(stdout);
+
+              return stdout;
+            }
+            reject(
+              new Error(`Rad repo not found in given directory. ${stderr}`)
+            );
+
+            return false;
+          }
+        );
+      });
+    })
+    .catch(() => {
+      return false;
+    });
 };
 
 /**

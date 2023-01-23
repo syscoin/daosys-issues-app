@@ -1,12 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { selectProject } from 'renderer/API/Project';
 
 export const Open: FC = () => {
-  const handleSelectProject = async () => {
-    const project_id: string = await selectProject();
+  const [project, setProject] = useState<string>('');
 
-    console.log(project_id);
+  const handleSelectProject = async () => {
+    const projectId: string | boolean = await selectProject();
+
+    setProject(projectId);
   };
 
   return (
@@ -16,6 +18,18 @@ export const Open: FC = () => {
 
         <Card.Body>
           <p>For manage issues of project you should open project directory.</p>
+
+          {project !== '' && (
+            <>
+              <Card>
+                <Card.Body>
+                  <p>
+                    Project found in given directory. Project Id - {project}
+                  </p>
+                </Card.Body>
+              </Card>
+            </>
+          )}
 
           <Button
             onClick={() => handleSelectProject()}
