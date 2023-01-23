@@ -22,6 +22,11 @@ import {
   openAndScanDirectoryForRadicleProject,
 } from './api';
 
+import {
+  CURRENT_PROJECT_ID_STORE_KEY,
+  CURRENT_PROJECT_PATH_STORE_KEY,
+} from './consts';
+
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -81,6 +86,13 @@ ipcMain.on('ipc-main', async (event, arg) => {
       // scan directory for radicle project and gather info
 
       event.reply('ipc-main', ['open-project-res', radProject, localDirectory]);
+
+      // todo save storage state and share it with react context to display new  menu parts
+
+      if (radProject !== false && localDirectory !== false) {
+        store.set(CURRENT_PROJECT_ID_STORE_KEY, radProject);
+        store.set(CURRENT_PROJECT_PATH_STORE_KEY, localDirectory);
+      }
     }
   }
 });
