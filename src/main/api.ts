@@ -14,7 +14,10 @@ export interface GetFullProfileResponseInterface {
 
 export const openAndScanDirectoryForRadicleProject = async (
   window: BrowserWindow
-): Promise<string | boolean> => {
+): Promise<{
+  radProject: string | boolean;
+  localDirectory: string | boolean;
+}> => {
   return new Promise((resolve, reject) => {
     dialog
       .showOpenDialog(window, {
@@ -23,44 +26,41 @@ export const openAndScanDirectoryForRadicleProject = async (
       })
       .then((value) => {
         if (value.canceled === false) {
-          resolve(value.filePaths[0]);
-        } else {
-          reject(new Error('Directory selection was cancelled'));
+          const path = value.filePaths[0] as string;
+          const cmdTemp = `cd ${path} && rad inspect`;
+
+          return exec(
+            cmdTemp,
+            (_error: ExecException | null, stdout: string, stderr: string) => {
+              if (stdout.includes('rad:git:')) {
+                // found rad repo
+
+                resolve({
+                  radProject: stdout.replace('\n', ''),
+                  localDirectory: path,
+                });
+
+                return {
+                  radProject: stdout.replace('\n', ''),
+                  localDirectory: path,
+                };
+              }
+              reject(
+                new Error(`Rad repo not found in given directory. ${stderr}`)
+              );
+
+              return false;
+            }
+          );
         }
+
+        return { radProject: false, localDirectory: false };
       })
       .catch((reason) => {
-        reject(reason);
-        return reason;
+        reject(new Error(reason));
+        return { radProject: false, localDirectory: false };
       });
-
-    return true;
-  })
-    .then((path): Promise<string | boolean> => {
-      return new Promise((resolve, reject) => {
-        const cmdTemp = `cd ${path} && rad inspect`;
-
-        exec(
-          cmdTemp,
-          (_error: ExecException | null, stdout: string, stderr: string) => {
-            if (stdout.includes('rad:git:')) {
-              // found rad repo
-
-              resolve(stdout);
-
-              return stdout;
-            }
-            reject(
-              new Error(`Rad repo not found in given directory. ${stderr}`)
-            );
-
-            return false;
-          }
-        );
-      });
-    })
-    .catch(() => {
-      return false;
-    });
+  });
 };
 
 /**
