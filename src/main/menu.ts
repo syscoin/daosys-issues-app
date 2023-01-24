@@ -54,10 +54,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'DaoSys',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About DaoSys',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
@@ -189,7 +189,7 @@ export default class MenuBuilder {
         ? subMenuViewDev
         : subMenuViewProd;
 
-    return [subMenuAbout, subMenuEdit, subMenuView, subMenuWindow, subMenuHelp];
+    return [subMenuAbout, subMenuHelp];
   }
 
   buildDefaultTemplate() {
