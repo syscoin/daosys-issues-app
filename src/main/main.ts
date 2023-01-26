@@ -18,6 +18,7 @@ import { resolveHtmlPath } from './util';
 import {
   GetFullProfileResponseInterface,
   RadicleApiDriver,
+  checkAuth,
   getFullProfile,
   openAndScanDirectoryForRadicleProject,
 } from './api';
@@ -70,6 +71,18 @@ ipcMain.on('ipc-main', async (event, arg) => {
         variable,
         value,
       ]);
+    }
+
+    // auth
+
+    if (action === 'check-auth') {
+      checkAuth()
+        .then((authorized) => {
+          return event.reply('ipc-main', ['check-auth-res', authorized]);
+        })
+        .catch(() => {
+          return event.reply('ipc-main', ['check-auth-res', false]);
+        });
     }
 
     // projects

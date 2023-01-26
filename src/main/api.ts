@@ -108,3 +108,15 @@ export const getFullProfile = async (
 
   return { name, id };
 };
+
+export const checkAuth = async (): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    exec('rad self --name', (error: ExecException | null) => {
+      if (error) {
+        reject(new Error(error.message));
+      } else {
+        resolve(true);
+      }
+    });
+  });
+};
