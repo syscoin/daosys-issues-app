@@ -50,8 +50,6 @@ ipcMain.on('ipc-main', async (event, arg) => {
         RadicleApiDriver.cli
       );
 
-      console.log(res);
-
       event.reply('ipc-main', ['full-profile-res', res.id, res.name]);
     }
 
@@ -77,8 +75,14 @@ ipcMain.on('ipc-main', async (event, arg) => {
 
     if (action === 'check-auth') {
       checkAuth()
-        .then((authorized) => {
-          return event.reply('ipc-main', ['check-auth-res', authorized]);
+        .then(async (authorized) => {
+          const currentProject = await store.get(CURRENT_PROJECT_ID_STORE_KEY);
+
+          return event.reply('ipc-main', [
+            'check-auth-res',
+            authorized,
+            currentProject,
+          ]);
         })
         .catch(() => {
           return event.reply('ipc-main', ['check-auth-res', false]);

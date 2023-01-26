@@ -9,6 +9,7 @@ import { Open } from './Pages/Open';
 import { MainContext } from './Contexts/MainContext';
 import { checkAuth } from './API/Common';
 import { NotInstalledAlert } from './Components/NotInstalledAlert';
+import { Issues } from './Pages/Issues';
 
 const Hello = () => {
   return (
@@ -31,17 +32,21 @@ const Hello = () => {
 
 export default function App() {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const [currentProject, setCurrentProject] = useState<string | null>(null);
 
   useEffect(() => {
     const runAuthCheck = () => {
       checkAuth()
-        .then((authorized) => {
+        .then(({ authorized, projectId }) => {
+          // console.log(authorized, projectId);
+
           setIsAuthorized(authorized);
+          setCurrentProject(projectId);
 
           return true;
         })
-        .catch((err) => {
-          console.warn(`Failed to check auth: ${err}`);
+        .catch(() => {
+          // console.warn(`Failed to check auth: ${err}`);
         });
     };
 
@@ -54,12 +59,8 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(isAuthorized);
-  }, [isAuthorized]);
-
   return (
-    <MainContext.Provider value={{ isAuthorized }}>
+    <MainContext.Provider value={{ isAuthorized, currentProject }}>
       <Router>
         <Container className="mt-3" fluid>
           {!isAuthorized && (
@@ -76,6 +77,7 @@ export default function App() {
                 <Route path="/" element={<Hello />} />
                 <Route path="/open" element={<Open />} />
                 <Route path="/me" element={<MyIdentity />} />
+                <Route path="/issues" element={<Issues />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
             </Col>

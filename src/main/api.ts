@@ -45,9 +45,7 @@ export const openAndScanDirectoryForRadicleProject = async (
                   localDirectory: path,
                 };
               }
-              reject(
-                new Error(`Rad repo not found in given directory. ${stderr}`)
-              );
+              resolve({ radProject: false, localDirectory: path });
 
               return false;
             }
